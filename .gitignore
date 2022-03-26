@@ -1,0 +1,5 @@
+.npmrc
+package*.json
+*.out
+*.dSYM
+node_modules
