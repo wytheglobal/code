@@ -38,7 +38,7 @@ int main() {
     MazeGame game;
     Maze* aMaze = game.CreateMaze();
     
-    std::cout << "Hello Wor1d!";
+    std::cout << "Hello Wor1d!" << std::endl;
     return 0;
 }
 

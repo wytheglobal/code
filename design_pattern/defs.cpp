@@ -1,4 +1,7 @@
+#include <iostream>
 #include <vector>
+
+using namespace std;
 
 enum Direction {North, South, East, West};
 
@@ -13,6 +16,7 @@ public:
 
     MapSite* GetSide(Direction) const; 
     void SetSide(Direction, MapSite*);
+    int GetRoomNo();
 
     virtual void Enter();
 
@@ -26,8 +30,10 @@ Room::Room(int roomNo) {
 void Room::SetSide(Direction direction, MapSite* mapSite) {
     _sides[direction] = mapSite;
 };
+int Room::GetRoomNo() {
+    return _roomNumber;
+}
 void Room::Enter() {
-
 };
 
 class Wall: public MapSite {
@@ -83,10 +89,11 @@ Maze::Maze() {
 Room* Maze::RoomNo(int rId) const{
     //can have other data types instead of int but must same datatype as item 
     for (Room* room : _rooms) {
-        // if (room->_roomNumber == rId) {
-        //     return room;
-        // }
+        if (room->GetRoomNo() == rId) {
+            return room;
+        }
     }
+    return nullptr;
 };
 void Maze::AddRoom(Room* room){
     _rooms.push_back(room);
