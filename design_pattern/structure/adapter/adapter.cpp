@@ -63,9 +63,7 @@ int main() {
     TextShape textshape;
     Point bl, tp;
     textshape.BoundingBox(bl, tp);
-    // Manipulator* mp = textshape.CreateManipulator();
-
-    Manipulator* mp2 = textshape.CreateManipulator();
+    Manipulator* mp = textshape.CreateManipulator();
 
     std::cout << "hello world" << std::endl;
 }
