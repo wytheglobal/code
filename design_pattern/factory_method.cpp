@@ -43,9 +43,18 @@ Maze* MazeGame::CreateMaze () {
     return aMaze;
 };
 
+class BombedMazeGame : public MazeGame {
+public:
+    virtual Wall* MakeWall() const { return new BombedWall; }
+    virtual Room* MakeRoom(int n) const { return new RoomWithABomb(n); }
+};
+
 int main() {
     MazeGame game;
 
     Maze* aMaze = game.CreateMaze();
+
+    BombedMazeGame bombedGame;
+    Maze* bMaze = bombedGame.CreateMaze();
     return 0;
 }
