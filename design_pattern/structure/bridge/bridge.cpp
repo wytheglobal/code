@@ -11,21 +11,19 @@ public:
         { std::cout << "drow some thing on view" << std::endl; };
 };
 
-
+// window implementation
 class WindowImp {
 public:
     virtual void drawReact(int, int, int, int) = 0;
-protected:
-    WindowImp() {};
 };
 
+// window abstraction
 class Window {
 public:
     // requests handled by window
     virtual void open()
         { std::cout << "window opend" << std::endl; };
-    virtual void DrawContents()
-        { std::cout << "window DrawContents" << std::endl; };
+
     // requests forwarded to implementation
     virtual void drawReact(Point&, Point&);
 
@@ -34,8 +32,8 @@ protected:
     View* GetView();
 
 private:
-    WindowImp* _imp;
-    View* _view;
+    WindowImp* _imp = 0;
+    View* _view = 0;
 };
 
 
@@ -57,12 +55,12 @@ public:
     };
 };
 
+
 WindowImp* Window::GetWindowImp() {
     // TODO abstract factory to return different Windou instance;
-    // XWindowImp* wWindowImp;
-    // return wWindowImp;
     if (_imp == 0) {
-        _imp = new XWindowImp;
+        // TEST
+        _imp = new PMWindowImp();
     }
     return _imp;
 };
@@ -77,44 +75,40 @@ void Window::drawReact(Point& topLeft, Point& bottomRight) {
     imp->drawReact(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
 }
 
-/*
 class ApplicationWindow : public Window {
 public:
     // use window abstraciton's method
     virtual void DrawContents()
     {
-        // WindowImp* imp = GetWindowImp();
-        // if (imp != 0) {
-        //     imp->drawReact(30, 30, 300, 300);
-        // }
         View* view = GetView();
         if (view != 0 ) {
             view->Draw();
         }
     };
 };
-*/
 
 
 class IconWindow : public Window {
 public:
-    //
     virtual void DrawContents()
     {
         WindowImp* imp = GetWindowImp();
         if (imp != 0) {
             imp->drawReact(30, 30, 300, 300);
         }
-        // XWindowImp ximp;
-        // ximp.drawReact(30, 30, 300 , 300);
     }
 };
 
 
 int main() {
+    // client code, platform-independent
+    ApplicationWindow appW;
+    appW.DrawContents();
+
+    Point p1 = {12, 12};
+    Point p2 = { 100, 122 };
+    appW.drawReact(p1, p2);
+
     IconWindow iconW;
     iconW.DrawContents();
-
-    // ApplicationWindow appW;
-    // appW.DrawContents();
 };
