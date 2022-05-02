@@ -3,3 +3,5 @@ package*.json
 *.out
 *.dSYM
 node_modules
+*.exe
+.DS_Store
