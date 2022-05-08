@@ -61,7 +61,7 @@ Item ListIterator<Item>::CurrentItem () const {
         // throw IteratorOutOfBounds;
         throw std::range_error("AddPositiveIntege");
     }
-    std::cout << "itrator" << _current << "total:" << _list.Count() << std::endl;
+    std::cout << "itrator index" << _current << " total count:" << _list.Count() << std::endl;
 
     return _list.Get(_current);
 }
@@ -134,11 +134,13 @@ Currency CompositeEquipment::NetPrice() {
         // https://stackoverflow.com/questions/21978512/c-casting-from-parent-to-child-after-passing-as-a-function
         CompositeEquipment* compositeItemPtr = dynamic_cast<CompositeEquipment*>(item);
         if (compositeItemPtr) {
-            std::cout << "CompositeEquipment converted" << std::endl;
-            total += compositeItemPtr->NetPrice();
+            Currency p1 = compositeItemPtr->NetPrice();
+            std::cout << "CompositeEquipment converted " << total << '|' << p1 << std::endl;
+            total += p1;
         } else {
-            std::cout << "CompositeEquipment converted failed" << std::endl;
-            total += item->NetPrice();
+            Currency p2 = item->NetPrice();
+            std::cout << "CompositeEquipment converted failed" << total << '|' << p2 << std::endl;
+            total += p2;
         }
     }
     std::cout << "CompositeEquipment::NetPrice loop <<<<" << total << std::endl;
