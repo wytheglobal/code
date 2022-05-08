@@ -36,9 +36,9 @@ public:
 template <class Item>
 class Node {
 public:
-    Node(const Item& item) : data(item) {};
+    Node(const Item item) : data(item) {};
     Node *next;
-    const Item& data;
+    const Item data;
 };
 
 // TODO
@@ -49,7 +49,7 @@ class List {
 public:
     List();
     const Item& Get(long index) const;
-    void Append(const Item&);
+    void Append(const Item);
 
     long Count() const;
 private:
@@ -77,7 +77,7 @@ const Item& List<Item>::Get(long index) const {
 };
 
 template <class Item>
-void List<Item>::Append(const Item& item) {
+void List<Item>::Append(const Item item) {
     Node<Item> *n = new Node<Item>(item);
     std::cout << _count << std::endl;
     if (_count == 0) {

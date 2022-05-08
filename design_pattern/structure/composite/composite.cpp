@@ -26,18 +26,18 @@ public:
 template <class Item>
 class ListIterator : public Iterator<Item> {
 public:
-    ListIterator(const List<Item>* aList);
+    ListIterator(const List<Item> aList);
     virtual void First();
     virtual void Next();
     virtual bool IsDone() const;
     virtual Item CurrentItem() const;
 private:
-    const List<Item>* _list;
+    const List<Item> _list;
     long _current;
 };
 
 template <class Item>
-ListIterator<Item>::ListIterator (const List<Item>* aList) : _list(aList), _current(0) {};
+ListIterator<Item>::ListIterator (const List<Item> aList) : _list(aList), _current(0) {};
 
 template <class Item>
 void ListIterator<Item>::First() {
@@ -51,17 +51,19 @@ void ListIterator<Item>::Next() {
 
 template <class Item>
 bool ListIterator<Item>::IsDone () const {
-    return _current >= _list->Count();
+    return _current >= _list.Count();
 };
 
 template <class Item>
 Item ListIterator<Item>::CurrentItem () const {
     if (IsDone()) {
+        std::cout << "itrator CurrentItem done" << std::endl;
         // throw IteratorOutOfBounds;
         throw std::range_error("AddPositiveIntege");
     }
-    std::cout << "itrator" << _current << "total:" << _list->Count() << std::endl;
-    return _list->Get(_current);
+    std::cout << "itrator" << _current << "total:" << _list.Count() << std::endl;
+
+    return _list.Get(_current);
 }
 
 class Equipment {
@@ -79,7 +81,7 @@ public:
         { cout << "add equipment" << endl ;  };
     virtual void Remove(Equipment*)
         { cout << "Remove equipment" << endl ;  };
-    virtual Iterator<Equipment>* CreateIterator() {};
+    virtual Iterator<Equipment*>* CreateIterator() {};
 protected:
     Equipment(const char* n) : _name(n) {};
 private:
@@ -96,24 +98,25 @@ public:
 
     virtual void Add(Equipment*);
     virtual void Remove(Equipment*);
-    virtual Iterator<Equipment>* CreateIterator();
+    virtual Iterator<Equipment*>* CreateIterator();
 
 protected:
     CompositeEquipment(const char* name) : Equipment(name) {
-        _equipment = new List<Equipment>;
+        // _equipment = new List<Equipment*>;
+        List<Equipment*> _equipment;
     };
 private:
-    List<Equipment>* _equipment = nullptr;
+    List<Equipment*> _equipment;
 };
 
-Iterator<Equipment>* CompositeEquipment::CreateIterator() {
-    return new ListIterator<Equipment>(_equipment);
+Iterator<Equipment*>* CompositeEquipment::CreateIterator() {
+    return new ListIterator<Equipment*>(_equipment);
 };
 
 void CompositeEquipment::Add(Equipment * item){
     // _equipment->Append(item);
-    // std::cout <<  Name() << " add -> " << item->Name() << std::endl;
-    _equipment->Append(*item);
+    std::cout <<  Name() << " add -> " << item->Name() << std::endl;
+    _equipment.Append(item);
 }
 void CompositeEquipment::Remove(Equipment* item) {
 
@@ -121,14 +124,24 @@ void CompositeEquipment::Remove(Equipment* item) {
 
 
 Currency CompositeEquipment::NetPrice() {
-    Iterator<Equipment>* i = CreateIterator();
+    Iterator<Equipment*>* i = CreateIterator();
     Currency total = 0;
 
+    std::cout << "CompositeEquipment::NetPrice loop >>>>" << std::endl;
     for (i->First(); !i->IsDone(); i->Next()) {
-        Equipment item = i->CurrentItem();
-        std::cout << "name: " << item.Name() << " price:" << item.NetPrice() << std::endl;
-        total += item.NetPrice();
+        Equipment* item = i->CurrentItem();
+        std::cout << "name: " << item->Name() << std::endl;
+        // https://stackoverflow.com/questions/21978512/c-casting-from-parent-to-child-after-passing-as-a-function
+        CompositeEquipment* compositeItemPtr = dynamic_cast<CompositeEquipment*>(item);
+        if (compositeItemPtr) {
+            std::cout << "CompositeEquipment converted" << std::endl;
+            total += compositeItemPtr->NetPrice();
+        } else {
+            std::cout << "CompositeEquipment converted failed" << std::endl;
+            total += item->NetPrice();
+        }
     }
+    std::cout << "CompositeEquipment::NetPrice loop <<<<" << total << std::endl;
     delete i;
     return total;
 }
@@ -156,12 +169,13 @@ class Bus  : public CompositeEquipment {
 public:
     Bus(const char* name) : CompositeEquipment(name) {};
 };
+
+
+
 class Card  : public Equipment {
 public:
     Card(const char* name) : Equipment(name) {};
 };
-
-
 class FloppyDisk : public Equipment {
 public:
     FloppyDisk(const char* name) : Equipment(name) {};
@@ -175,22 +189,24 @@ public:
 
 int main() {
     // CompositeEquipment* e = new CompositeEquipment("mother_board");
-    // cabinet 机箱
+    // cabinet 机箱 CompositeEquipment
     Cabinet* cabinet = new Cabinet("PC Cabinet");
-    // chasis 底盘
+    // chasis 底盘 CompositeEquipment
     Chassis* chassis = new Chassis("PC Chassis");
     /*
     */
     cabinet->Add(chassis);
 
+    // bus CompositeEquipment
     Bus* bus = new Bus("MCA Bus");
-    bus->Add(new Card("16Mbs Token Ring"));
+    Card* card = new Card("16Mbs Token Ring");
+
+    bus->Add(card);
+    chassis->Add(bus);
 
     FloppyDisk* floppydisk = new FloppyDisk("3.5in Floppy");
-
-    chassis->Add(bus);
     chassis->Add(floppydisk);
 
     cout << "The net price is " << std::endl;
-    cout << chassis->NetPrice() << endl;
+    cout << cabinet->NetPrice() << endl;
 }
